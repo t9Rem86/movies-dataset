@@ -139,9 +139,57 @@ if page == "Визуализация исходных данных":
         linewidths=0.5, 
         ax=ax
     )
-
-    
     st.pyplot(fig)
+
+    st.subheader("🔵 Scatter plots (пары признаков)")
+
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Возраст vs Максимальный пульс**")
+        fig_scatter_1 = px.scatter(
+            filtered_df,
+            x="age",
+            y="thalach",
+            color="target",
+            labels={"target": "Заболевание"}
+        )
+        st.plotly_chart(fig_scatter_1, use_container_width=True, key="scatter_age_thalach")
+    
+    with col2:
+        st.markdown("**Возраст vs Холестерин**")
+        fig_scatter_2 = px.scatter(
+            filtered_df,
+            x="age",
+            y="chol",
+            color="target",
+            labels={"target": "Заболевание"}
+        )
+    st.plotly_chart(fig_scatter_2, use_container_width=True, key="scatter_age_chol")
+
+    st.subheader("🥧 Пропорции категориальных признаков")
+
+    col3, col4 = st.columns(2)
+    
+    with col3:
+        st.markdown("**Пол пациентов**")
+        fig_pie_sex = px.pie(
+            filtered_df,
+            names="sex",
+            title="Распределение по полу"
+        )
+        st.plotly_chart(fig_pie_sex, use_container_width=True, key="pie_sex")
+    
+    with col4:
+        st.markdown("**Наличие сердечного заболевания**")
+        fig_pie_target = px.pie(
+            filtered_df,
+            names="target",
+            title="Распределение целевой переменной"
+        )
+    st.plotly_chart(fig_pie_target, use_container_width=True, key="pie_target")
+
+
 
 
 # =========================
