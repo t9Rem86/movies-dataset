@@ -113,6 +113,7 @@ if page == "Визуализация исходных данных":
         st.markdown("**Пол (sex)**")
         sex_counts = filtered_df["sex"].value_counts().reset_index()
         sex_counts.columns = ["sex", "count"]
+        sex_counts["sex"] = sex_counts["sex"].replace({0: "women", 1: "men"})
         fig_sex = px.bar(sex_counts, x="sex", y="count")
         st.plotly_chart(fig_sex, use_container_width=True, key="sex_bar")
     
