@@ -4,7 +4,6 @@ import numpy as np
 import plotly.express as px
 import seaborn as sns
 import matplotlib.pyplot as plt
-from google.colab import drive
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
