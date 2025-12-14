@@ -126,19 +126,10 @@ if page == "Визуализация исходных данных":
     st.subheader("Корреляционная матрица")
     
     # Размер графика меньше
-    fig, ax = plt.subplots(figsize=(6, 4))
-    
-    # Рисуем heatmap с значениями на пересечениях
-    sns.heatmap(
-        filtered_df.corr(), 
-        cmap="coolwarm", 
-        annot=True,        # показываем значения
-        fmt=".2f",         # формат чисел
-        linewidths=0.5,    # разделительные линии
-        ax=ax
-    )
-    
-    st.pyplot(fig)
+    plt.figure(figsize=(10,8))
+    sns.heatmap(filtered_df.corr(), annot=True, cmap='coolwarm')
+    plt.title('Матрица корреляций')
+    plt.show()
 
 # =========================
 # СТРАНИЦА 2
