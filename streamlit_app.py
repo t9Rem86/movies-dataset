@@ -124,12 +124,19 @@ if page == "Визуализация исходных данных":
         st.plotly_chart(fig_cp, use_container_width=True, key="cp_bar")
 
     st.subheader("Корреляционная матрица")
-    
+
     # Размер графика меньше
-    plt.figure(figsize=(10,8))
-    sns.heatmap(filtered_df.corr(), annot=True, cmap='coolwarm')
-    plt.title('Матрица корреляций')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(6, 4))
+    
+    # Рисуем heatmap с значениями на пересечениях
+    sns.heatmap(
+        filtered_df.corr(), 
+        cmap="coolwarm", 
+        annot=True,
+    )
+    
+    st.pyplot(fig)
+
 
 # =========================
 # СТРАНИЦА 2
