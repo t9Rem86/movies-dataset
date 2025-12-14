@@ -89,6 +89,58 @@ if page == "Визуализация исходных данных":
     
     st.dataframe(stats_df, use_container_width=True)
 
+    st.subheader("📈 Распределения признаков")
+
+    selected_column = st.selectbox(
+        "Выберите признак для анализа распределения:",
+        filtered_df.columns
+    )
+
+    # Определяем тип признака
+    unique_values = filtered_df[selected_column].nunique()
+    
+    # Числовые признаки
+    if pd.api.types.is_numeric_dtype(filtered_df[selected_column]) and unique_values > 10:
+        
+        chart_type = st.radio(
+            "Тип визуализации:",
+            ["Гистограмма", "Box Plot"],
+            horizontal=True
+        )
+    
+        if chart_type == "Гистограмма":
+            fig = px.histogram(
+                filtered_df,
+                x=selected_column,
+                nbins=30,
+                title=f"Распределение признака: {selected_column}"
+            )
+        else:
+            fig = px.box(
+                filtered_df,
+                y=selected_column,
+                title=f"Box Plot признака: {selected_column}"
+            )
+    
+    # Категориальные признаки
+    else:
+        value_counts = (
+            filtered_df[selected_column]
+            .value_counts()
+            .reset_index()
+            .rename(columns={"index": selected_column, selected_column: "Count"})
+        )
+    
+        fig = px.bar(
+            value_counts,
+            x=selected_column,
+            y="Count",
+            title=f"Распределение категорий: {selected_column}"
+        )
+    
+    st.plotly_chart(fig, use_container_width=True)
+
+
     # Гистограмма возраста
     st.subheader("Распределение возраста")
     fig_age = px.histogram(filtered_df, x="age", nbins=20)
