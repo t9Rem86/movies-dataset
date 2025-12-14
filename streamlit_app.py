@@ -90,70 +90,39 @@ if page == "Визуализация исходных данных":
     st.dataframe(stats_df, use_container_width=True)
 
     st.subheader("📊 Распределения признаков")
-
-    # =========================
-    # ЧИСЛОВЫЕ ПРИЗНАКИ
-    # =========================
+    
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("**Распределение возраста (age)**")
-        fig_age = px.histogram(
-            filtered_df,
-            x="age",
-            nbins=20
-        )
-        st.plotly_chart(fig_age, use_container_width=True)
+        fig_age = px.histogram(filtered_df, x="age", nbins=20)
+        st.plotly_chart(fig_age, use_container_width=True, key="age_hist")
     
     with col2:
         st.markdown("**Распределение холестерина (chol)**")
-        fig_chol = px.box(
-            filtered_df,
-            y="chol"
-        )
-        st.plotly_chart(fig_chol, use_container_width=True)
+        fig_chol = px.box(filtered_df, y="chol")
+        st.plotly_chart(fig_chol, use_container_width=True, key="chol_box")
     
-    # =========================
-    # ЕЩЁ ОДИН ЧИСЛОВОЙ
-    # =========================
     st.markdown("**Распределение максимального пульса (thalach)**")
-    fig_thalach = px.histogram(
-        filtered_df,
-        x="thalach",
-        nbins=20
-    )
-    st.plotly_chart(fig_thalach, use_container_width=True)
+    fig_thalach = px.histogram(filtered_df, x="thalach", nbins=20)
+    st.plotly_chart(fig_thalach, use_container_width=True, key="thalach_hist")
     
-    # =========================
-    # КАТЕГОРИАЛЬНЫЕ ПРИЗНАКИ
-    # =========================
     col3, col4 = st.columns(2)
     
     with col3:
         st.markdown("**Пол (sex)**")
         sex_counts = filtered_df["sex"].value_counts().reset_index()
         sex_counts.columns = ["sex", "count"]
-    
-        fig_sex = px.bar(
-            sex_counts,
-            x="sex",
-            y="count"
-        )
-        st.plotly_chart(fig_sex, use_container_width=True)
+        fig_sex = px.bar(sex_counts, x="sex", y="count")
+        st.plotly_chart(fig_sex, use_container_width=True, key="sex_bar")
     
     with col4:
         st.markdown("**Тип боли в груди (cp)**")
         cp_counts = filtered_df["cp"].value_counts().reset_index()
         cp_counts.columns = ["cp", "count"]
+        fig_cp = px.bar(cp_counts, x="cp", y="count")
+        st.plotly_chart(fig_cp, use_container_width=True, key="cp_bar")
     
-        fig_cp = px.bar(
-            cp_counts,
-            x="cp",
-            y="count"
-        )
-        st.plotly_chart(fig_cp, use_container_width=True)
-
-
     # Гистограмма возраста
     st.subheader("Распределение возраста")
     fig_age = px.histogram(filtered_df, x="age", nbins=20)
