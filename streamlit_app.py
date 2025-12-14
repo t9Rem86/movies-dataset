@@ -66,6 +66,10 @@ if page == "Визуализация исходных данных":
 
     st.markdown("---")
 
+    # Таблица
+    st.subheader("Таблица данных")
+    st.dataframe(filtered_df, use_container_width=True)
+
     st.subheader("📋 Статистическое описание признаков")
 
     stats_df = filtered_df.describe().T[
@@ -84,10 +88,6 @@ if page == "Визуализация исходных данных":
     )
     
     st.dataframe(stats_df, use_container_width=True)
-
-    # Таблица
-    st.subheader("Таблица данных")
-    st.dataframe(filtered_df, use_container_width=True)
 
     # Гистограмма возраста
     st.subheader("Распределение возраста")
