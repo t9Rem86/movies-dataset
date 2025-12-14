@@ -55,8 +55,8 @@ elif sex_filter == "Женщины":
 # =========================
 # СТРАНИЦА 1
 # =========================
-if page == "Raw Data Visualization":
-    st.title("📄 Raw Data Visualization")
+if page == "Визуализация исходных данных":
+    st.title("📄 Визуализация исходных данных")
 
     # KPI
     col1, col2, col3 = st.columns(3)
@@ -89,8 +89,8 @@ if page == "Raw Data Visualization":
 # =========================
 # СТРАНИЦА 2
 # =========================
-if page == "Analysis Results":
-    st.title("📊 Analysis Results")
+if page == "Результаты анализа":
+    st.title("📊 Результаты анализа")
 
     X = filtered_df.drop("target", axis=1)
     y = filtered_df["target"]
