@@ -122,21 +122,22 @@ if page == "Визуализация исходных данных":
         cp_counts.columns = ["cp", "count"]
         fig_cp = px.bar(cp_counts, x="cp", y="count")
         st.plotly_chart(fig_cp, use_container_width=True, key="cp_bar")
-    
-    # Гистограмма возраста
-    st.subheader("Распределение возраста")
-    fig_age = px.histogram(filtered_df, x="age", nbins=20)
-    st.plotly_chart(fig_age, use_container_width=True)
 
-    # Boxplot холестерина
-    st.subheader("Распределение холестерина")
-    fig_chol = px.box(filtered_df, y="chol")
-    st.plotly_chart(fig_chol, use_container_width=True)
-
-    # Корреляционная матрица
     st.subheader("Корреляционная матрица")
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.heatmap(filtered_df.corr(), cmap="coolwarm", ax=ax)
+    
+    # Размер графика меньше
+    fig, ax = plt.subplots(figsize=(6, 4))
+    
+    # Рисуем heatmap с значениями на пересечениях
+    sns.heatmap(
+        filtered_df.corr(), 
+        cmap="coolwarm", 
+        annot=True,        # показываем значения
+        fmt=".2f",         # формат чисел
+        linewidths=0.5,    # разделительные линии
+        ax=ax
+    )
+    
     st.pyplot(fig)
 
 # =========================
