@@ -89,56 +89,69 @@ if page == "Визуализация исходных данных":
     
     st.dataframe(stats_df, use_container_width=True)
 
-    st.subheader("📈 Распределения признаков")
+  st.subheader("📊 Распределения признаков")
 
-    selected_column = st.selectbox(
-        "Выберите признак для анализа распределения:",
-        filtered_df.columns
+    # =========================
+    # ЧИСЛОВЫЕ ПРИЗНАКИ
+    # =========================
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Распределение возраста (age)**")
+        fig_age = px.histogram(
+            filtered_df,
+            x="age",
+            nbins=20
+        )
+        st.plotly_chart(fig_age, use_container_width=True)
+    
+    with col2:
+        st.markdown("**Распределение холестерина (chol)**")
+        fig_chol = px.box(
+            filtered_df,
+            y="chol"
+        )
+        st.plotly_chart(fig_chol, use_container_width=True)
+    
+    # =========================
+    # ЕЩЁ ОДИН ЧИСЛОВОЙ
+    # =========================
+    st.markdown("**Распределение максимального пульса (thalach)**")
+    fig_thalach = px.histogram(
+        filtered_df,
+        x="thalach",
+        nbins=20
     )
-
-    # Определяем тип признака
-    unique_values = filtered_df[selected_column].nunique()
+    st.plotly_chart(fig_thalach, use_container_width=True)
     
-    # Числовые признаки
-    if pd.api.types.is_numeric_dtype(filtered_df[selected_column]) and unique_values > 10:
-        
-        chart_type = st.radio(
-            "Тип визуализации:",
-            ["Гистограмма", "Box Plot"],
-            horizontal=True
+    # =========================
+    # КАТЕГОРИАЛЬНЫЕ ПРИЗНАКИ
+    # =========================
+    col3, col4 = st.columns(2)
+    
+    with col3:
+        st.markdown("**Пол (sex)**")
+        sex_counts = filtered_df["sex"].value_counts().reset_index()
+        sex_counts.columns = ["sex", "count"]
+    
+        fig_sex = px.bar(
+            sex_counts,
+            x="sex",
+            y="count"
         )
+        st.plotly_chart(fig_sex, use_container_width=True)
     
-        if chart_type == "Гистограмма":
-            fig = px.histogram(
-                filtered_df,
-                x=selected_column,
-                nbins=30,
-                title=f"Распределение признака: {selected_column}"
-            )
-        else:
-            fig = px.box(
-                filtered_df,
-                y=selected_column,
-                title=f"Box Plot признака: {selected_column}"
-            )
+    with col4:
+        st.markdown("**Тип боли в груди (cp)**")
+        cp_counts = filtered_df["cp"].value_counts().reset_index()
+        cp_counts.columns = ["cp", "count"]
     
-    # Категориальные признаки
-    else:
-        value_counts = (
-            filtered_df[selected_column]
-            .value_counts()
-            .reset_index()
-            .rename(columns={"index": selected_column, selected_column: "Count"})
+        fig_cp = px.bar(
+            cp_counts,
+            x="cp",
+            y="count"
         )
-    
-        fig = px.bar(
-            value_counts,
-            x=selected_column,
-            y="Count",
-            title=f"Распределение категорий: {selected_column}"
-        )
-    
-    st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig_cp, use_container_width=True)
 
 
     # Гистограмма возраста
