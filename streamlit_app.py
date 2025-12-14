@@ -66,6 +66,25 @@ if page == "Визуализация исходных данных":
 
     st.markdown("---")
 
+    st.subheader("📋 Статистическое описание признаков")
+
+    stats_df = filtered_df.describe().T[
+        ["mean", "50%", "std", "min", "max"]
+    ]
+    
+    stats_df.rename(
+        columns={
+            "mean": "Среднее",
+            "50%": "Медиана",
+            "std": "Стандартное отклонение",
+            "min": "Минимум",
+            "max": "Максимум"
+        },
+        inplace=True
+    )
+    
+    st.dataframe(stats_df, use_container_width=True)
+
     # Таблица
     st.subheader("Таблица данных")
     st.dataframe(filtered_df, use_container_width=True)
