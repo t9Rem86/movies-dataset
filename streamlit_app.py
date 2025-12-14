@@ -28,7 +28,7 @@ df = load_data()
 # SIDEBAR
 # =========================
 st.sidebar.title("Навигация")
-page = st.sidebar.radio("Выберите страницу:", ["Raw Data Visualization", "Analysis Results"])
+page = st.sidebar.radio("Выберите страницу:", ["Визуализация исходных данных", "Результаты анализа"])
 
 st.sidebar.markdown("---")
 age_range = st.sidebar.slider(
