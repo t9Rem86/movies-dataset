@@ -132,8 +132,13 @@ if page == "Визуализация исходных данных":
     sns.heatmap(
         filtered_df.corr(), 
         cmap="coolwarm", 
-        annot=True,
+        annot=True, 
+        fmt=".2f", 
+        annot_kws={"size":6},  # уменьшили шрифт
+        linewidths=0.5, 
+        ax=ax
     )
+
     
     st.pyplot(fig)
 
