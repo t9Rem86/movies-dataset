@@ -20,7 +20,7 @@ st.set_page_config(page_title="Heart Disease Dashboard", layout="wide")
 # =========================
 @st.cache_data
 def load_data():
-    return pd.read_csv('/data/heart.csv')
+    return pd.read_csv('data/heart.csv')
 
 df = load_data()
 
