@@ -186,9 +186,28 @@ if page == "Визуализация исходных данных":
 # =========================
 # СТРАНИЦА 2
 # =========================
+# =========================
+# СТРАНИЦА 2: РЕЗУЛЬТАТЫ АНАЛИЗА
+# =========================
 if page == "Результаты анализа":
     st.title("📊 Результаты анализа")
 
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import roc_auc_score
+
+    # =========================
+    # ВЫБОР МОДЕЛИ
+    # =========================
+    st.sidebar.markdown("### ⚙️ Настройки анализа")
+
+    model_type = st.sidebar.selectbox(
+        "Выберите модель",
+        ["Logistic Regression", "Random Forest"]
+    )
+
+    # =========================
+    # ПОДГОТОВКА ДАННЫХ
+    # =========================
     X = filtered_df.drop("target", axis=1)
     y = filtered_df["target"]
 
@@ -199,18 +218,39 @@ if page == "Результаты анализа":
         X_scaled, y, test_size=0.2, random_state=42
     )
 
-    model = LogisticRegression(max_iter=1000)
+    # =========================
+    # ОБУЧЕНИЕ МОДЕЛИ
+    # =========================
+    if model_type == "Logistic Regression":
+        model = LogisticRegression(max_iter=1000)
+    else:
+        model = RandomForestClassifier(
+            n_estimators=200,
+            random_state=42
+        )
+
     model.fit(X_train, y_train)
 
     y_pred = model.predict(X_test)
     y_prob = model.predict_proba(X_test)[:, 1]
 
+    # =========================
+    # KPI-МЕТРИКИ
+    # =========================
     acc = accuracy_score(y_test, y_pred)
+    auc_score = roc_auc_score(y_test, y_prob)
 
-    st.metric("Accuracy модели", round(acc, 3))
+    col1, col2 = st.columns(2)
+    col1.metric("Accuracy", round(acc, 3))
+    col2.metric("ROC-AUC", round(auc_score, 3))
 
-    # Confusion Matrix
+    st.markdown("---")
+
+    # =========================
+    # CONFUSION MATRIX
+    # =========================
     st.subheader("Confusion Matrix")
+
     cm = confusion_matrix(y_test, y_pred)
 
     fig_cm = px.imshow(
@@ -220,21 +260,83 @@ if page == "Результаты анализа":
         x=["No Disease", "Disease"],
         y=["No Disease", "Disease"]
     )
-    st.plotly_chart(fig_cm)
+    st.plotly_chart(fig_cm, use_container_width=True)
 
-    # ROC Curve
+    # =========================
+    # ROC-КРИВАЯ
+    # =========================
     st.subheader("ROC-кривая")
+
     fpr, tpr, _ = roc_curve(y_test, y_prob)
-    roc_auc = auc(fpr, tpr)
 
     fig_roc = px.line(
-        x=fpr, y=tpr,
-        labels={"x": "False Positive Rate", "y": "True Positive Rate"},
-        title=f"ROC Curve (AUC = {roc_auc:.2f})"
+        x=fpr,
+        y=tpr,
+        labels={
+            "x": "False Positive Rate",
+            "y": "True Positive Rate"
+        },
+        title=f"ROC Curve (AUC = {auc_score:.2f})"
     )
-    st.plotly_chart(fig_roc)
+    st.plotly_chart(fig_roc, use_container_width=True)
 
-    st.success(
-        "📌 Insight: при выбранных фильтрах модель демонстрирует стабильное качество "
-        "предсказания сердечных заболеваний."
+    # =========================
+    # FEATURE IMPORTANCE
+    # =========================
+    st.subheader("🔥 Влияние признаков (интерпретация модели)")
+
+    if model_type == "Logistic Regression":
+        importance = pd.Series(
+            model.coef_[0],
+            index=X.columns
+        ).sort_values()
+
+        title = "Коэффициенты логистической регрессии"
+
+    else:
+        importance = pd.Series(
+            model.feature_importances_,
+            index=X.columns
+        ).sort_values()
+
+        title = "Feature Importance (Random Forest)"
+
+    fig_imp = px.bar(
+        importance,
+        orientation="h",
+        title=title
     )
+    st.plotly_chart(fig_imp, use_container_width=True)
+
+    # =========================
+    # СРАВНЕНИЕ МОДЕЛЕЙ
+    # =========================
+    st.subheader("📋 Сравнение моделей")
+
+    comparison_df = pd.DataFrame({
+        "Модель": [model_type],
+        "Accuracy": [round(acc, 3)],
+        "ROC-AUC": [round(auc_score, 3)]
+    })
+
+    st.dataframe(comparison_df, use_container_width=True)
+
+    # =========================
+    # INSIGHTS
+    # =========================
+    st.success(
+        f"""
+📌 **Инсайты для выбранных фильтров:**
+
+- Используемая модель: **{model_type}**
+- Точность классификации: **{acc:.2f}**
+- ROC-AUC: **{auc_score:.2f}**
+- Наиболее значимые признаки:
+  **{importance.index[-1]}**, **{importance.index[-2]}**
+
+ℹ️ Изменение фильтров (возраст, пол) напрямую влияет на качество модели,
+что указывает на различия в структуре риска сердечных заболеваний
+между подгруппами пациентов.
+"""
+    )
+
