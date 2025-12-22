@@ -9,6 +9,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
 
 st.set_page_config(page_title="Heart Disease Dashboard", layout="wide")
 
@@ -31,9 +33,6 @@ age_range = st.sidebar.slider(
 
 sex_filter = st.sidebar.selectbox("Пол", ["Все", "Мужчины", "Женщины"])
 
-# =========================
-# ФИЛЬТРАЦИЯ
-# =========================
 filtered_df = df[
     (df.age >= age_range[0]) & (df.age <= age_range[1])
 ]
@@ -43,9 +42,6 @@ if sex_filter == "Мужчины":
 elif sex_filter == "Женщины":
     filtered_df = filtered_df[filtered_df.sex == 0]
 
-# =========================
-# СТРАНИЦА 1
-# =========================
 if page == "Визуализация исходных данных":
     st.title("📄 Визуализация исходных данных")
 
@@ -57,7 +53,6 @@ if page == "Визуализация исходных данных":
 
     st.markdown("---")
 
-    # Таблица
     st.subheader("📊Таблица данных")
     st.dataframe(filtered_df, use_container_width=True)
 
@@ -117,10 +112,8 @@ if page == "Визуализация исходных данных":
 
     st.subheader("Корреляционная матрица")
 
-    # Размер графика меньше
     fig, ax = plt.subplots(figsize=(6, 4))
     
-    # Рисуем heatmap с значениями на пересечениях
     sns.heatmap(
         filtered_df.corr(), 
         cmap="coolwarm", 
@@ -173,19 +166,9 @@ if page == "Визуализация исходных данных":
     )
     st.plotly_chart(fig_pie_target, use_container_width=True, key="pie_target")
 
-
-# =========================
-# СТРАНИЦА 2: РЕЗУЛЬТАТЫ АНАЛИЗА
-# =========================
 if page == "Результаты анализа":
     st.title("📊 Результаты анализа")
 
-    from sklearn.ensemble import RandomForestClassifier
-    from sklearn.metrics import roc_auc_score
-
-    # =========================
-    # ВЫБОР МОДЕЛИ
-    # =========================
     st.sidebar.markdown("### ⚙️ Настройки анализа")
 
     model_type = st.sidebar.selectbox(
@@ -193,13 +176,9 @@ if page == "Результаты анализа":
         ["Логистическая регрессия", "Случайный лес"]
     )
 
-    # =========================
-    # ПОДГОТОВКА ДАННЫХ
-    # =========================
     X = filtered_df.drop("target", axis=1)
     y = filtered_df["target"]
 
-    # 🔒 ПРОВЕРКА: есть ли оба класса
     if y.nunique() < 2:
         st.warning(
             "⚠️ Для выбранных фильтров присутствует только один класс целевой переменной.\n\n"
@@ -218,7 +197,6 @@ if page == "Результаты анализа":
         stratify=y
     )
 
-    # 🔒 ДОП. ПРОВЕРКА после разбиения
     if y_train.nunique() < 2 or y_test.nunique() < 2:
         st.warning(
             "⚠️ После разбиения данных в обучающей или тестовой выборке "
@@ -227,9 +205,6 @@ if page == "Результаты анализа":
         )
         st.stop()
 
-    # =========================
-    # ОБУЧЕНИЕ МОДЕЛИ
-    # =========================
     if model_type == "Логистическая регрессия":
         model = LogisticRegression(max_iter=1000)
         model_name = "Логистическая регрессия"
@@ -244,12 +219,8 @@ if page == "Результаты анализа":
 
     y_pred = model.predict(X_test)
 
-    # predict_proba теперь безопасен
     y_prob = model.predict_proba(X_test)[:, 1]
 
-    # =========================
-    # KPI-МЕТРИКИ
-    # =========================
     acc = accuracy_score(y_test, y_pred)
     auc_score = roc_auc_score(y_test, y_prob)
 
@@ -259,9 +230,6 @@ if page == "Результаты анализа":
 
     st.markdown("---")
 
-    # =========================
-    # CONFUSION MATRIX
-    # =========================
     st.subheader("Матрица ошибок классификации")
 
     cm = confusion_matrix(y_test, y_pred)
@@ -280,9 +248,6 @@ if page == "Результаты анализа":
     )
     st.plotly_chart(fig_cm, use_container_width=True)
 
-    # =========================
-    # ROC-КРИВАЯ
-    # =========================
     st.subheader("ROC-кривая")
 
     fpr, tpr, _ = roc_curve(y_test, y_prob)
@@ -298,9 +263,6 @@ if page == "Результаты анализа":
     )
     st.plotly_chart(fig_roc, use_container_width=True)
 
-    # =========================
-    # FEATURE IMPORTANCE
-    # =========================
     st.subheader("🔥 Влияние признаков на результат")
 
     if model_type == "Логистическая регрессия":
@@ -332,9 +294,6 @@ if page == "Результаты анализа":
     )
     st.plotly_chart(fig_imp, use_container_width=True)
 
-    # =========================
-    # СРАВНЕНИЕ РЕЗУЛЬТАТОВ
-    # =========================
     st.subheader("📋 Результаты модели")
 
     comparison_df = pd.DataFrame({
@@ -345,9 +304,6 @@ if page == "Результаты анализа":
 
     st.dataframe(comparison_df, use_container_width=True)
 
-    # =========================
-    # INSIGHTS
-    # =========================
     st.success(
         f"""
 📌 **Инсайты для выбранных фильтров:**
