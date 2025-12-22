@@ -10,24 +10,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc
 
-# =========================
-# НАСТРОЙКИ
-# =========================
 st.set_page_config(page_title="Heart Disease Dashboard", layout="wide")
 
-# =========================
-# ЗАГРУЗКА ДАННЫХ
-# =========================
 @st.cache_data
 def load_data():
     return pd.read_csv('data/heart.csv')
 
 df = load_data()
 
-# =========================
-# SIDEBAR
-# =========================
-st.sidebar.title("Навигация")
+st.sidebar.title("🗺Навигация")
 page = st.sidebar.radio("Выберите страницу:", ["Визуализация исходных данных", "Результаты анализа"])
 
 st.sidebar.markdown("---")
